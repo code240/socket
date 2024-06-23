@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Socket.IO chat</title>
+    <style>
+        /* Add your CSS here */
+    </style>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js" integrity="sha384-2huaZvOR9iDzHqslqwpR87isEmrfxqyWOF7hr7BY6KG0+hVKLoEXMPUJw3ynWuhO" crossorigin="anonymous"></script>
+</head>
+<body>
+    <ul id="messages"></ul>
+    <input type="text" id="roomCode" placeholder="Enter Room Code" autocomplete="off" />
+    <button onclick="joinRoom()">Join Room</button><br><br> 
+    <input type="text" id="m" autocomplete="off" />
+    <button onclick="sendMessage()">Send</button>
+    <script>
+        var socket = io('http://localhost:3001');
+        var roomCode;
+
+        function joinRoom() {
+            roomCode = document.getElementById('roomCode').value;
+            if (roomCode) {
+                socket.emit('joinRoom', roomCode);
+            }
+        }
+
+        function sendMessage() {
+            var input = document.getElementById('m');
+            if (input.value && roomCode) {
+                socket.emit('chatMessage', { code: roomCode, message: input.value });
+                input.value = '';
+            }
+        }
+
+        socket.on('chatMessage', function(msg) {
+            var item = document.createElement('li');
+            item.textContent = msg;
+            messages.appendChild(item);
+            window.scrollTo(0, document.body.scrollHeight);
+        });
+    </script>
+</body>
+</html>
